@@ -1,0 +1,48 @@
+﻿<div>
+    <h2>Könyvek</h2>
+    <hr>
+    <select id="lista" onchange="Show()">
+    </select>
+    <p id="eredmeny"></p>
+</div>
+
+<script>
+
+    function Load() {
+        // 1. kérdés milyen adat kell
+        // Le kell kérni a könyv címeket (cím + id)
+        // 2. Kell-e valamilyen adatot megadni, ahhoz hogy elérjük a kívánt adatokat
+        // itt nem kell bemenet
+
+        fetch("https://localhost:7190/api/GetBookTitles")
+            .then(res => res.json())
+            .then(bookTitleDtos => {
+                var select = document.getElementById("lista");
+                for (var i = 0; i < bookTitleDtos.length; i++) {
+                    var new_option = document.createElement("option");
+                    new_option.value = bookTitleDtos[i].id; // azonosító
+                    new_option.text = bookTitleDtos[i].title.trim(); // cím
+                    select.appendChild(new_option);
+                }
+            })
+    }
+
+    function Show() {
+
+        var select = document.getElementById("lista");
+        var id = select.value;
+        fetch("https://localhost:7190/api/GetBookById/" + id)
+            .then(res => res.json())
+            .then(book => {
+
+                document.getElementById("eredmeny").innerHTML =
+                    "<br><b>Író:</b> " + book.author +
+                    "<br><b>Cím:</b> " + book.title +
+                    "<br><b>Megjelenési dátum:</b> " + book.releaseDate;
+
+                })
+    }
+    window.onload = Load;
+
+
+</script>
